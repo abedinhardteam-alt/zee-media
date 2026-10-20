@@ -15,9 +15,15 @@ export async function accessTokenFromRefresh(refresh: string) {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body,
   });
-  const json = (await res.json()) as { access_token?: string; error?: string };
+  const raw = await res.text();
+  let json: { access_token?: string; error?: string; error_description?: string } = {};
+  try {
+    json = raw ? (JSON.parse(raw) as typeof json) : {};
+  } catch {
+    throw new Error("Google token refresh returned invalid JSON");
+  }
   if (!res.ok || !json.access_token) {
-    throw new Error(json.error || "Google token refresh failed");
+    throw new Error(json.error_description || json.error || "Google token refresh failed");
   }
   return json.access_token;
 }

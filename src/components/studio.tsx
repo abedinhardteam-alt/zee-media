@@ -188,8 +188,14 @@ function UploadPanel({ studioKey }: { studioKey: string }) {
       body.set("likes", likes);
       body.set("views", views);
       const res = await fetch("/api/upload", { method: "POST", body });
-      const data = (await res.json()) as { ok?: boolean; error?: string; id?: string };
-      if (!res.ok) throw new Error(data.error || "Upload failed");
+      const raw = await res.text();
+      let data: { ok?: boolean; error?: string; id?: string } = {};
+      try {
+        data = raw ? (JSON.parse(raw) as typeof data) : {};
+      } catch {
+        throw new Error(raw?.slice(0, 180) || `Upload failed (${res.status})`);
+      }
+      if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
       setMsg(`Live · /v/${data.id}`);
       setTitle("");
       setFile(null);
@@ -288,7 +294,7 @@ function EditCard({ video, studioKey }: { video: VideoDoc; studioKey: string }) 
     setMsg("");
     try {
       const res = await fetch("/api/video", {
-        method: "PATCH",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           key: studioKey,
@@ -299,8 +305,14 @@ function EditCard({ video, studioKey }: { video: VideoDoc; studioKey: string }) 
           views: Number(views) || 0,
         }),
       });
-      const data = (await res.json()) as { error?: string };
-      if (!res.ok) throw new Error(data.error || "Save failed");
+      const raw = await res.text();
+      let data: { error?: string } = {};
+      try {
+        data = raw ? (JSON.parse(raw) as { error?: string }) : {};
+      } catch {
+        throw new Error(raw?.slice(0, 180) || `Save failed (${res.status})`);
+      }
+      if (!res.ok) throw new Error(data.error || `Save failed (${res.status})`);
       setMsg("Saved");
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Save failed");
