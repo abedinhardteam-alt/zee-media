@@ -44,3 +44,5 @@ next-env.d.ts
 # media binaries live on Firebase Hosting, not in git
 cdn/media/*.mp4
 cdn/media/*.jpg
+
+.vercel

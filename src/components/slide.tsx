@@ -1,9 +1,10 @@
 "use client";
 
-import { Check, Link2, Pause, Play, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Check, Eye, Heart, Link2, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { VideoDoc } from "@/lib/types";
 import { fullDate, timeAgo } from "@/lib/time";
+import { compactCount } from "@/lib/video";
 
 export function Slide({ video, activeHint }: { video: VideoDoc; activeHint: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -13,6 +14,7 @@ export function Slide({ video, activeHint }: { video: VideoDoc; activeHint: bool
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState(false);
   const [inView, setInView] = useState(activeHint);
+  const [loved, setLoved] = useState(false);
 
   useEffect(() => {
     const el = box.current;
@@ -73,28 +75,27 @@ export function Slide({ video, activeHint }: { video: VideoDoc; activeHint: bool
         }}
         onClick={togglePlay}
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/35" />
-      <div className="absolute right-3 bottom-28 z-10 flex flex-col items-center gap-3">
-        <button
-          onClick={() => setMuted((m) => !m)}
-          className="grid h-12 w-12 place-items-center rounded-full bg-white/10 backdrop-blur ring-1 ring-white/15"
-          aria-label={muted ? "Unmute" : "Mute"}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/35" />
+      <div className="absolute right-3 bottom-32 z-10 flex flex-col items-center gap-4">
+        <RailBtn
+          label={compactCount(video.likes)}
+          onClick={() => setLoved((v) => !v)}
+          active={loved}
         >
+          <Heart className={`h-6 w-6 ${loved ? "fill-[#ff2d55] text-[#ff2d55]" : ""}`} />
+        </RailBtn>
+        <RailBtn label={compactCount(video.views)}>
+          <Eye className="h-6 w-6" />
+        </RailBtn>
+        <RailBtn label={muted ? "Mute" : "On"} onClick={() => setMuted((m) => !m)}>
           {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-        </button>
-        <button
-          onClick={copyLink}
-          className="grid h-12 w-12 place-items-center rounded-full bg-white/10 backdrop-blur ring-1 ring-white/15"
-          aria-label="Copy link"
-        >
+        </RailBtn>
+        <RailBtn label={copied ? "Copied" : "Share"} onClick={copyLink}>
           {copied ? <Check className="h-5 w-5 text-gold" /> : <Link2 className="h-5 w-5" />}
-        </button>
-        <div className="text-[10px] font-semibold tracking-wide text-white/70">
-          {copied ? "COPIED" : "LINK"}
-        </div>
+        </RailBtn>
       </div>
       <div className="absolute inset-x-0 bottom-0 z-10 p-5 pb-8">
-        <h1 className="font-display max-w-[80%] text-2xl font-semibold leading-tight">{video.title}</h1>
+        <h1 className="font-display max-w-[78%] text-2xl font-semibold leading-tight">{video.title}</h1>
         <p className="mt-2 text-sm text-white/75">
           {timeAgo(video.createdAt)} · {fullDate(video.createdAt)}
         </p>
@@ -117,5 +118,32 @@ export function Slide({ video, activeHint }: { video: VideoDoc; activeHint: bool
         </button>
       ) : null}
     </section>
+  );
+}
+
+function RailBtn({
+  children,
+  label,
+  onClick,
+  active,
+}: {
+  children: ReactNode;
+  label: string;
+  onClick?: () => void;
+  active?: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <button
+        type="button"
+        onClick={onClick}
+        className={`grid h-12 w-12 place-items-center rounded-full bg-white/10 backdrop-blur ring-1 ring-white/15 ${
+          active ? "ring-[#ff2d55]/50" : ""
+        }`}
+      >
+        {children}
+      </button>
+      <span className="text-[11px] font-semibold tracking-wide text-white/80">{label}</span>
+    </div>
   );
 }

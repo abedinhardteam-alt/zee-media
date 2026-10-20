@@ -6,4 +6,6 @@ export type VideoDoc = {
   size: number;
   videoUrl: string;
   posterUrl: string;
+  likes: number;
+  views: number;
 };

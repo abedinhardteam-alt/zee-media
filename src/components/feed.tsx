@@ -4,20 +4,9 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import { db } from "@/lib/firebase";
 import type { VideoDoc } from "@/lib/types";
+import { parseVideo } from "@/lib/video";
 import { Slide } from "@/components/slide";
 import { Logo } from "@/components/logo";
-
-function parse(id: string, data: Record<string, unknown>): VideoDoc {
-  return {
-    id,
-    title: String(data.title ?? ""),
-    createdAt: Number(data.createdAt ?? 0),
-    duration: Number(data.duration ?? 0),
-    size: Number(data.size ?? 0),
-    videoUrl: String(data.videoUrl ?? ""),
-    posterUrl: String(data.posterUrl ?? ""),
-  };
-}
 
 export function Feed({ initialId }: { initialId?: string }) {
   const [items, setItems] = useState<VideoDoc[]>([]);
@@ -29,7 +18,7 @@ export function Feed({ initialId }: { initialId?: string }) {
       collection(db, "videos"),
       (snap) => {
         const rows = snap.docs
-          .map((d) => parse(d.id, d.data()))
+          .map((d) => parseVideo(d.id, d.data()))
           .sort((a, b) => b.createdAt - a.createdAt);
         setItems(rows);
         setReady(true);
