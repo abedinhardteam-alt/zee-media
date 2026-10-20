@@ -1,6 +1,6 @@
 const CLIENT_ID =
-  "563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e2.apps.googleusercontent.com";
-const CLIENT_SECRET = "jEQC98uNEz5zB6Tv8X7x2o_Z";
+  "563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com";
+const CLIENT_SECRET = "j9iVZfS8kkCEFUPaAeJV0sAi";
 
 export async function accessTokenFromRefresh(refresh: string) {
   if (refresh.startsWith("ya29.")) return refresh;
