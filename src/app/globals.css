@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #050505;
+  --fg: #f4f4f5;
+  --muted: #a1a1aa;
+  --line: rgba(255, 255, 255, 0.1);
+  --gold: #e8c36a;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-muted: var(--muted);
+  --color-gold: var(--gold);
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Syne", "DM Sans", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  background: #050505;
+  color: var(--fg);
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.feed {
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.slide {
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.no-bar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
